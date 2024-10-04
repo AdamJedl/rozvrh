@@ -3,6 +3,7 @@ import {DateTime} from "luxon";
 import Timetable from "../models/Timetable.ts";
 import TimeRemaining from "./TimeRemaining.tsx";
 import Lessons from "./Lessons.tsx";
+import Lessons_new from "./Lessons_new.tsx";
 
 interface Props {
     teacherModeEnabled: boolean;
@@ -41,6 +42,10 @@ function TimetableInfo(props: Props) {
             <TimeRemaining currentTime={currentTime} hourTimes={props.timetable.hourTimes} hours={hours}
                            firstHourIndex={firstHourIndex} lastHourIndex={lastHourIndex}/>
             <Lessons teacherModeEnabled={props.teacherModeEnabled} currentTime={currentTime}
+                     hourTimes={props.timetable.hourTimes}
+                     hours={hours} firstHourIndex={firstHourIndex} lastHourIndex={lastHourIndex}/>
+            <hr/>
+            <Lessons_new teacherModeEnabled={props.teacherModeEnabled} currentTime={currentTime}
                      hourTimes={props.timetable.hourTimes}
                      hours={hours} firstHourIndex={firstHourIndex} lastHourIndex={lastHourIndex}/>
         </div>
