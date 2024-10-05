@@ -14,26 +14,25 @@ interface Props {
 }
 
 function Lessons(props: Props) {
-  let currentHourIndex: number = -1;
+  let currentHourIndex = -1;
   let currentHourIsNull = false;
   let isBreak = false;
 
-  const numberOfNextHours = 10;
+  const numberOfNextHours = 5;
 
   for (let i = props.firstHourIndex; i <= props.lastHourIndex; i++) {
     if (props.currentTime > props.hourTimes[i].end) {
       continue;
     }
 
+    currentHourIndex = i;
     if (props.currentTime < props.hourTimes[i].start) {
       if (i > props.firstHourIndex) {
         isBreak = true;
       } else {
         currentHourIsNull = true;
       }
-      currentHourIndex = i - 1;
-    } else {
-      currentHourIndex = i;
+      currentHourIndex--;
     }
 
     break;
@@ -48,12 +47,10 @@ function Lessons(props: Props) {
   ) {
     let lesson: Lesson | null = null;
 
-    if (index !== currentHourIndex) {
-      isBreak = false;
-      lesson = props.hours[index].selectedLesson;
-    } else if (!currentHourIsNull && index !== -1) {
+    if (index !== currentHourIndex || (!currentHourIsNull && index !== -1)) {
       lesson = props.hours[index].selectedLesson;
     }
+
     LessonInfos.push(
       <LessonInfo
         teacherModeEnabled={props.teacherModeEnabled}
@@ -64,15 +61,14 @@ function Lessons(props: Props) {
     if (index === -1) {
       break;
     }
+    isBreak = false;
   }
   return (
     <div
       className="d-flex flex-column justify-content-center align-items-center"
       style={{ fontSize: "calc(1rem + 2vw)" }}
     >
-      <div>
-        {LessonInfos}
-      </div>
+      <div>{LessonInfos}</div>
     </div>
   );
 }
