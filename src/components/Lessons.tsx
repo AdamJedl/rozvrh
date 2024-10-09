@@ -1,10 +1,11 @@
 import LessonInfo from "./LessonInfo.tsx";
 import Lesson from "../models/Lesson.ts";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 import HourTime from "../models/HourTime.ts";
 import Hour from "../models/Hour.ts";
-import {ReactElement} from "react";
+import { ReactElement, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import Overflow from "react-overflow-indicator";
 
 interface Props {
     teacherModeEnabled: boolean;
@@ -27,8 +28,8 @@ function generateFilteredLessonInfos(
     shownHoursCount: number
 ) {
     // This is necessary to display "volno" after all lessons in case the last lesson is not null (not "volno").
-    if (lessonInfoProps[lessonInfoProps.length-1].lesson !== null) {
-       lessonInfoProps.push({lesson: null, isBreak: false});
+    if (lessonInfoProps[lessonInfoProps.length - 1].lesson !== null) {
+        lessonInfoProps.push({ lesson: null, isBreak: false });
     }
     for (let index = lessonInfoProps.length - 1; index > 0; index--) {
         if (lessonInfoProps[index].lesson === null) {
@@ -40,7 +41,11 @@ function generateFilteredLessonInfos(
         }
     }
     let lessonInfos: ReactElement[] = [];
-    for (let index = 0; index < Math.min(lessonInfoProps.length, shownHoursCount); index++) {
+    for (
+        let index = 0;
+        index < Math.min(lessonInfoProps.length, shownHoursCount);
+        index++
+    ) {
         lessonInfos.push(
             <LessonInfo
                 teacherModeEnabled={teacherModeEnabled}
@@ -54,7 +59,7 @@ function generateFilteredLessonInfos(
                 key={index * 2}
             />
         );
-        lessonInfos.push(<hr key={index * 2 + 1}/>);
+        lessonInfos.push(<hr key={index * 2 + 1} />);
     }
     lessonInfos.pop();
     return lessonInfos;
@@ -90,7 +95,7 @@ function Lessons(props: Props) {
             lesson = props.hours[index].selectedLesson;
         }
 
-        lessonInfoProps.push({lesson, isBreak});
+        lessonInfoProps.push({ lesson, isBreak });
 
         if (index === -1) {
             break;
@@ -99,17 +104,41 @@ function Lessons(props: Props) {
         isBreak = false;
     }
 
-    return <div className="d-flex flex-column justify-content-center align-items-center"
-                style={{fontSize: "calc(1rem + 2vw)"}}>
-        <div>
-            {generateFilteredLessonInfos(
-                lessonInfoProps,
-                currentHourIndex < props.firstHourIndex,
-                props.teacherModeEnabled,
-                shownHoursCount
-            )}
+    const [canScroll, setCanScroll] = useState(false);
+
+    return (
+        <div
+            className="flex-column justify-content-center align-items-center scrollbox"
+            // style={{
+            //     fontSize: "calc(1rem + 2vw)",
+            //     maxHeight: "calc(35vh - 6vw)",
+            //     overflow: "auto",
+            //     // backgroundRepeat: "no-repeat",
+            //     // backgroundSize: "100% 40px, 100% 40px, 100% 14px, 100% 14px",
+            //     // backgroundAttachment: "local, local, scroll, scroll",
+            //     // background: "linear-gradient(var(--bs-body-bg) 30%, rgba(255,255,255,0)), linear-gradient(rgba(255,255,255,0), var(--bs-body-bg) 70%) 0 100%, radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.2), rgba(0,0,0,0)), radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%",
+            // }}
+            // a @ts-expect-error this is necessary because with style object it didn't work
+            // STYLE=" font-size: calc(1rem + 2vw);
+            //         max-height: calc(35vh - 6vw);
+            //         overflow: auto;
+            //         // background: linear-gradient(var(--bs-body-bg) 30%, rgba(255,255,255,0)), linear-gradient(rgba(255,255,255,0), var(--bs-body-bg) 70%) 0 100%, radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.2), rgba(0,0,0,0)), radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%;
+            //         background: linear-gradient(var(--bs-body-bg) 30%, rgba(255,255,255,0)), linear-gradient(rgba(255,255,255,0), var(--bs-body-bg) 70%) 0 100%, radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.2), rgba(0,0,0,0)), radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%;
+            //         background-repeat: no-repeat;
+            //         // background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+            //         background-size: 100% 80px, 100% 80px, 100% 40px, 100% 40px;
+            //         background-attachment: local, local, scroll, scroll;"
+        >
+            <div className="overflow-y-auto">
+                {generateFilteredLessonInfos(
+                    lessonInfoProps,
+                    currentHourIndex < props.firstHourIndex,
+                    props.teacherModeEnabled,
+                    shownHoursCount
+                )}
+            </div>
         </div>
-    </div>
+    );
 }
 
-export default Lessons
+export default Lessons;
